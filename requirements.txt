@@ -1,0 +1,30 @@
+# AI Trading Bot Dependencies
+
+# Data fetching and exchange APIs
+ccxt>=4.3.0  # Unified exchange API (supports Deribit + Coinbase)
+requests>=2.31.0
+pandas>=2.1.0
+numpy>=1.24.0
+python-dotenv>=1.0.0
+
+# Technical indicators
+pandas-ta>=0.3.14b  # Technical analysis library
+ta-lib>=0.4.28  # Alternative TA library (requires binary install)
+
+# AI Models
+anthropic>=0.25.0  # Claude API
+openai>=1.35.0  # OpenAI API
+
+# Scheduling
+APScheduler>=3.10.4
+
+# Data validation and settings
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+
+# Logging
+loguru>=0.7.2
+
+# Utilities
+python-dateutil>=2.8.2
+pytz>=2024.1
