@@ -1,5 +1,7 @@
 """Abstract base interface for AI trading models."""
 
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 
 
@@ -11,3 +13,6 @@ class BaseAIModel(ABC):
         """Get a trading decision from the AI model."""
 
         raise NotImplementedError
+
+
+__all__ = ["BaseAIModel"]

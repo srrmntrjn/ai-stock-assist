@@ -1,6 +1,7 @@
 """Exchange abstraction layer providing a unified exchange interface."""
 
 from src.config import settings
+from src.logger import log
 from src.exchanges.base import BaseExchange
 from src.exchanges.deribit_exchange import DeribitExchange
 from src.exchanges.mock_exchange import MockExchange
@@ -12,6 +13,7 @@ def get_exchange() -> BaseExchange:
     exchange_name = settings.exchange.lower()
 
     if exchange_name == "mock":
+        log.info("Using mock exchange (paper trading mode)")
         return MockExchange()
 
     if exchange_name == "deribit":
@@ -22,11 +24,9 @@ def get_exchange() -> BaseExchange:
         )
 
     if exchange_name == "coinbase":
-        raise NotImplementedError(
-            "Coinbase exchange support is not implemented yet."
-        )
+        raise NotImplementedError("Coinbase exchange support is not implemented yet.")
 
     raise ValueError(f"Unsupported exchange configured: {settings.exchange}")
 
 
-__all__ = ["BaseExchange", "MockExchange", "DeribitExchange", "get_exchange"]
+__all__ = ["BaseExchange", "DeribitExchange", "MockExchange", "get_exchange"]
