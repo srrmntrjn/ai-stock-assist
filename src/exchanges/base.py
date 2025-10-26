@@ -1,7 +1,7 @@
 """Base exchange interface for abstraction"""
 
 from abc import ABC, abstractmethod
-from typing import Dict, List, Optional, Any
+from typing import List, Optional
 from dataclasses import dataclass
 from datetime import datetime
 
