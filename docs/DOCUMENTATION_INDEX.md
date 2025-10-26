@@ -40,7 +40,7 @@ Welcome to the AI Trading Bot documentation!
   - OHLCV data fetching
   - Open Interest and Funding Rate estimation
 
-- **Task 06: Technical Indicators** ✅
+- **[Task 06: Technical Indicators](tasks/06_technical_indicators.md)** ✅
   - pandas-ta integration
   - EMA, MACD, RSI, ATR calculation
   - Multi-timeframe analysis (3m, 4h)
