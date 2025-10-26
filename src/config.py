@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     )
 
     # Exchange Configuration
-    exchange: Literal["deribit", "coinbase"] = Field(default="deribit")
+    exchange: Literal["mock", "deribit", "coinbase"] = Field(default="mock")
     environment: Literal["testnet", "production"] = Field(default="testnet")
 
     # Deribit API Keys
@@ -63,6 +63,8 @@ class Settings(BaseSettings):
     @property
     def exchange_api_key(self) -> str:
         """Get the appropriate API key based on exchange and environment"""
+        if self.exchange == "mock":
+            return ""
         if self.exchange == "deribit":
             if self.environment == "testnet":
                 return self.deribit_testnet_api_key
@@ -74,6 +76,8 @@ class Settings(BaseSettings):
     @property
     def exchange_secret(self) -> str:
         """Get the appropriate secret based on exchange and environment"""
+        if self.exchange == "mock":
+            return ""
         if self.exchange == "deribit":
             if self.environment == "testnet":
                 return self.deribit_testnet_secret
@@ -87,10 +91,11 @@ class Settings(BaseSettings):
         errors = []
 
         # Check exchange credentials
-        if not self.exchange_api_key:
-            errors.append(f"Missing API key for {self.exchange} ({self.environment})")
-        if not self.exchange_secret:
-            errors.append(f"Missing secret for {self.exchange} ({self.environment})")
+        if self.exchange != "mock":
+            if not self.exchange_api_key:
+                errors.append(f"Missing API key for {self.exchange} ({self.environment})")
+            if not self.exchange_secret:
+                errors.append(f"Missing secret for {self.exchange} ({self.environment})")
 
         # Check AI credentials
         if self.ai_model == "claude" and not self.anthropic_api_key:
