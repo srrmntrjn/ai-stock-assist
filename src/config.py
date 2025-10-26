@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     )
 
     # Exchange Configuration
-    exchange: Literal["deribit", "coinbase"] = Field(default="deribit")
+    exchange: Literal["mock", "deribit", "coinbase"] = Field(default="mock")
     environment: Literal["testnet", "production"] = Field(default="testnet")
 
     # Deribit API Keys
@@ -30,7 +30,7 @@ class Settings(BaseSettings):
     coinbase_secret: str = Field(default="")
 
     # AI Model Configuration
-    ai_model: Literal["claude", "openai"] = Field(default="claude")
+    ai_model: Literal["mock", "claude", "openai"] = Field(default="mock")
     anthropic_api_key: str = Field(default="")
     openai_api_key: str = Field(default="")
 
@@ -86,11 +86,12 @@ class Settings(BaseSettings):
         """Validate that required configuration is present"""
         errors = []
 
-        # Check exchange credentials
-        if not self.exchange_api_key:
-            errors.append(f"Missing API key for {self.exchange} ({self.environment})")
-        if not self.exchange_secret:
-            errors.append(f"Missing secret for {self.exchange} ({self.environment})")
+        # Check exchange credentials (skip for mock exchange)
+        if self.exchange != "mock":
+            if not self.exchange_api_key:
+                errors.append(f"Missing API key for {self.exchange} ({self.environment})")
+            if not self.exchange_secret:
+                errors.append(f"Missing secret for {self.exchange} ({self.environment})")
 
         # Check AI credentials
         if self.ai_model == "claude" and not self.anthropic_api_key:
