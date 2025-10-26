@@ -1,41 +1,33 @@
-"""Configuration management using Pydantic settings"""
+"""Configuration management using Pydantic settings."""
 
 from typing import List, Literal
+
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    """Application settings loaded from environment variables"""
+    """Application settings loaded from environment variables."""
 
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
         case_sensitive=False,
-        extra="ignore"
+        extra="ignore",
     )
 
     # Exchange Configuration
-    exchange: Literal["deribit", "coinbase"] = Field(default="deribit")
+    exchange: Literal["mock", "coinbase"] = Field(default="mock")
     environment: Literal["testnet", "production"] = Field(default="testnet")
 
-    # Deribit API Keys
-    deribit_testnet_api_key: str = Field(default="")
-    deribit_testnet_secret: str = Field(default="")
-    deribit_api_key: str = Field(default="")
-    deribit_secret: str = Field(default="")
-
-    # Coinbase API Keys
+    # API Keys
+    anthropic_api_key: str = Field(default="")
+    openai_api_key: str = Field(default="")
     coinbase_api_key: str = Field(default="")
     coinbase_secret: str = Field(default="")
 
-    # AI Model Configuration
-    ai_model: Literal["claude", "openai"] = Field(default="claude")
-    anthropic_api_key: str = Field(default="")
-    openai_api_key: str = Field(default="")
-
     # Trading Configuration
-    initial_balance: float = Field(default=10000.0)
+    initial_balance: float = Field(default=10_000.0)
     symbols: str = Field(
         default="BTC-PERPETUAL,ETH-PERPETUAL,SOL-PERPETUAL,BNB-PERPETUAL,XRP-PERPETUAL,DOGE-PERPETUAL"
     )
@@ -57,49 +49,47 @@ class Settings(BaseSettings):
 
     @property
     def symbol_list(self) -> List[str]:
-        """Parse symbols from comma-separated string"""
-        return [s.strip() for s in self.symbols.split(",")]
+        """Parse symbols from comma-separated string."""
+
+        return [s.strip() for s in self.symbols.split(",") if s.strip()]
 
     @property
     def exchange_api_key(self) -> str:
-        """Get the appropriate API key based on exchange and environment"""
-        if self.exchange == "deribit":
-            if self.environment == "testnet":
-                return self.deribit_testnet_api_key
-            return self.deribit_api_key
-        elif self.exchange == "coinbase":
-            return self.coinbase_api_key
+        """Return the API key appropriate for the configured exchange."""
+
+        if self.exchange == "coinbase":
+            return self.coinbase_api_key.strip()
+        # Mock exchange uses internal credentials and therefore does not require a key.
         return ""
 
     @property
     def exchange_secret(self) -> str:
-        """Get the appropriate secret based on exchange and environment"""
-        if self.exchange == "deribit":
-            if self.environment == "testnet":
-                return self.deribit_testnet_secret
-            return self.deribit_secret
-        elif self.exchange == "coinbase":
-            return self.coinbase_secret
+        """Return the secret appropriate for the configured exchange."""
+
+        if self.exchange == "coinbase":
+            return self.coinbase_secret.strip()
+        # Mock exchange uses internal credentials and therefore does not require a secret.
         return ""
 
     def validate_config(self) -> None:
-        """Validate that required configuration is present"""
+        """Validate that required configuration is present."""
+
         errors = []
 
-        # Check exchange credentials
-        if not self.exchange_api_key:
-            errors.append(f"Missing API key for {self.exchange} ({self.environment})")
-        if not self.exchange_secret:
-            errors.append(f"Missing secret for {self.exchange} ({self.environment})")
+        if self.exchange == "coinbase":
+            if not self.coinbase_api_key.strip():
+                errors.append("Missing Coinbase API key")
+            if not self.coinbase_secret.strip():
+                errors.append("Missing Coinbase secret")
 
-        # Check AI credentials
-        if self.ai_model == "claude" and not self.anthropic_api_key:
+        if not self.anthropic_api_key.strip():
             errors.append("Missing Anthropic API key")
-        elif self.ai_model == "openai" and not self.openai_api_key:
+        if not self.openai_api_key.strip():
             errors.append("Missing OpenAI API key")
 
         if errors:
-            raise ValueError(f"Configuration errors:\n" + "\n".join(f"  - {e}" for e in errors))
+            message = "Configuration errors:\n" + "\n".join(f"  - {error}" for error in errors)
+            raise ValueError(message)
 
 
 # Global settings instance
