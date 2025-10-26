@@ -58,7 +58,7 @@ class Settings(BaseSettings):
         """Return the API key appropriate for the configured exchange."""
 
         if self.exchange == "coinbase":
-            return self.coinbase_api_key
+            return self.coinbase_api_key.strip()
         # Mock exchange uses internal credentials and therefore does not require a key.
         return ""
 
@@ -67,7 +67,7 @@ class Settings(BaseSettings):
         """Return the secret appropriate for the configured exchange."""
 
         if self.exchange == "coinbase":
-            return self.coinbase_secret
+            return self.coinbase_secret.strip()
         # Mock exchange uses internal credentials and therefore does not require a secret.
         return ""
 
@@ -77,14 +77,14 @@ class Settings(BaseSettings):
         errors = []
 
         if self.exchange == "coinbase":
-            if not self.coinbase_api_key:
+            if not self.coinbase_api_key.strip():
                 errors.append("Missing Coinbase API key")
-            if not self.coinbase_secret:
+            if not self.coinbase_secret.strip():
                 errors.append("Missing Coinbase secret")
 
-        if not self.anthropic_api_key:
+        if not self.anthropic_api_key.strip():
             errors.append("Missing Anthropic API key")
-        if not self.openai_api_key:
+        if not self.openai_api_key.strip():
             errors.append("Missing OpenAI API key")
 
         if errors:
