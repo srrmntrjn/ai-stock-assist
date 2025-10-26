@@ -17,14 +17,22 @@ class Settings(BaseSettings):
     )
 
     # Exchange Configuration
-    exchange: Literal["mock", "coinbase"] = Field(default="mock")
+    exchange: Literal["mock", "deribit", "coinbase"] = Field(default="mock")
     environment: Literal["testnet", "production"] = Field(default="testnet")
 
-    # API Keys
-    anthropic_api_key: str = Field(default="")
-    openai_api_key: str = Field(default="")
+    # Deribit API Keys
+    deribit_testnet_api_key: str = Field(default="")
+    deribit_testnet_secret: str = Field(default="")
+    deribit_api_key: str = Field(default="")
+    deribit_secret: str = Field(default="")
+
+    # Coinbase API Keys
     coinbase_api_key: str = Field(default="")
     coinbase_secret: str = Field(default="")
+
+    # AI Model Configuration
+    anthropic_api_key: str = Field(default="")
+    openai_api_key: str = Field(default="")
 
     # Trading Configuration
     initial_balance: float = Field(default=10_000.0)
@@ -55,20 +63,28 @@ class Settings(BaseSettings):
 
     @property
     def exchange_api_key(self) -> str:
-        """Return the API key appropriate for the configured exchange."""
-
-        if self.exchange == "coinbase":
-            return self.coinbase_api_key.strip()
-        # Mock exchange uses internal credentials and therefore does not require a key.
+        """Get the appropriate API key based on exchange and environment."""
+        if self.exchange == "mock":
+            return ""
+        if self.exchange == "deribit":
+            if self.environment == "testnet":
+                return self.deribit_testnet_api_key
+            return self.deribit_api_key
+        elif self.exchange == "coinbase":
+            return self.coinbase_api_key
         return ""
 
     @property
     def exchange_secret(self) -> str:
-        """Return the secret appropriate for the configured exchange."""
-
-        if self.exchange == "coinbase":
-            return self.coinbase_secret.strip()
-        # Mock exchange uses internal credentials and therefore does not require a secret.
+        """Get the appropriate secret based on exchange and environment."""
+        if self.exchange == "mock":
+            return ""
+        if self.exchange == "deribit":
+            if self.environment == "testnet":
+                return self.deribit_testnet_secret
+            return self.deribit_secret
+        elif self.exchange == "coinbase":
+            return self.coinbase_secret
         return ""
 
     def validate_config(self) -> None:
@@ -76,11 +92,12 @@ class Settings(BaseSettings):
 
         errors = []
 
-        if self.exchange == "coinbase":
-            if not self.coinbase_api_key.strip():
-                errors.append("Missing Coinbase API key")
-            if not self.coinbase_secret.strip():
-                errors.append("Missing Coinbase secret")
+        # Check exchange credentials
+        if self.exchange != "mock":
+            if not self.exchange_api_key:
+                errors.append(f"Missing API key for {self.exchange} ({self.environment})")
+            if not self.exchange_secret:
+                errors.append(f"Missing secret for {self.exchange} ({self.environment})")
 
         if not self.anthropic_api_key.strip():
             errors.append("Missing Anthropic API key")
