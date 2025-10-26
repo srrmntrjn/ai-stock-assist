@@ -31,6 +31,7 @@ class Settings(BaseSettings):
     coinbase_secret: str = Field(default="")
 
     # AI Model Configuration
+    ai_model: Literal["mock", "claude", "openai"] = Field(default="mock")
     anthropic_api_key: str = Field(default="")
     openai_api_key: str = Field(default="")
 
@@ -92,7 +93,7 @@ class Settings(BaseSettings):
 
         errors = []
 
-        # Check exchange credentials
+        # Check exchange credentials (skip for mock exchange)
         if self.exchange != "mock":
             if not self.exchange_api_key:
                 errors.append(f"Missing API key for {self.exchange} ({self.environment})")

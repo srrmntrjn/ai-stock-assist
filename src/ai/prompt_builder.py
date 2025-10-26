@@ -124,3 +124,6 @@ class PromptBuilder:
         if isinstance(series, Iterable) and not isinstance(series, (str, bytes, dict)):
             return json.dumps(list(series))
         return json.dumps([]) if series is None else json.dumps(series)
+
+
+__all__ = ["PromptBuilder"]
