@@ -241,6 +241,24 @@ Key metrics tracked:
 - Number of trades
 - PnL per trade
 
+### 🖥️ Web Dashboard (New)
+
+Get a quick visual snapshot of your mock trading performance with the built-in dashboard.
+
+```bash
+# Install requirements if you haven't already
+pip install -r requirements.txt
+
+# Launch the dashboard (default http://localhost:5000)
+python -m web.app
+```
+
+Features:
+- Live account balance, available cash, and deployed capital
+- Open position overview with mark prices and unrealized PnL
+- Recent trade history pulled directly from the mock exchange state
+- Auto-refreshing charts driven by the data saved in `data/mock_exchange_state.json`
+
 ---
 
 ## ⚠️ Risk Disclaimer
